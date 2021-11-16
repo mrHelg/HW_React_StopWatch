@@ -5,48 +5,56 @@ class StopWatch extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      time:new Date(0,0,0,0,0,0,0)
-    }  
-    this.intervalId = null;
+      time: new Date(0, 0, 0, 0, 0, 0, 0),
+    };
+    this.isOn = false;
   }
 
-  tick = ()=>{
-    this.setState((state,props)=>{
-      const {time} = state;
-      const newTime = new Date(time.getTime()+1000);
-      return {time: newTime}
-    })
-  }
+  tick = () => {
+    this.setState((state, props) => {
+      const { time } = state;
+      const newTime = new Date(time.getTime() + 1000);
+      return { time: newTime };
+    });
+  };
 
-  start = ()=>{
-    if(this.intervalId===null){
-      this.intervalId = setInterval(this.tick, 1000);
+  timer = () => {
+    setTimeout(() => {
+      if (this.isOn) {
+        this.tick();
+        this.timer();
+      }
+    }, 1000);
+  };
+
+  start = () => {
+    if (!this.isOn) {
+      this.isOn = true;
+      this.timer();
     }
-  }
+  };
 
-  stop = () =>{
-    clearInterval(this.intervalId);
-    this.intervalId = null;
-  }
+  stop = () => {
+    this.isOn = false;
+  };
 
-  reset = () =>{
+  reset = () => {
     this.stop();
-    this.setState({time:new Date(0,0,0,0,0,0,0)})
-  }
-    
-  componentDidMount(){
+    this.setState({ time: new Date(0, 0, 0, 0, 0, 0, 0) });
+  };
+
+  componentDidMount() {
     this.start();
   }
 
-  componentDidUpdate(){
-  }
+  componentDidUpdate() {}
 
-  componentWillUnmount(){
+  componentWillUnmount() {
     this.stop();
   }
 
   render() {
-    const {time} = this.state;
+    const { time } = this.state;
     return (
       <article className={styles.container}>
         <h2>{time.toLocaleTimeString('en-GB')}</h2>
